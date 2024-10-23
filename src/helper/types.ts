@@ -1,5 +1,38 @@
-import { PackageDir, NamedPackageDir } from '@salesforce/core';
-import { MetadataInfo,QueryResult } from 'jsforce';
+import { NamedPackageDir } from '@salesforce/core';
+import { PackagePackageDir, PackageDirDependency } from '@salesforce/schemas';
+import { QueryResult } from 'jsforce';
+
+export declare type DateString = string & {
+  __DateBrand: never;
+};
+export declare type BlobString = string & {
+  __BlobBrand: never;
+};
+export declare type Address = {
+  city: string | null;
+  country: string | null;
+  geocodeAccuracy: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  postalCode: string | null;
+  state: string | null;
+  street: string | null;
+};
+
+export declare type SObjectFieldType = number | boolean | DateString | BlobString | string | Address;
+
+export interface SObjectDefinition<N extends string = string> {
+  Name: N;
+  Fields: {
+      [name: string]: SObjectFieldType | null;
+  };
+  ParentReferences: {
+      [name: string]: SObjectDefinition | null;
+  };
+  ChildRelationships: {
+      [name: string]: SObjectDefinition;
+  };
+}
 
 export enum ComponentStatus {
   Created = 'Created',
@@ -73,7 +106,7 @@ export interface ExternalDataSourceMeta {
   type?: string;
   [x: string | number | symbol]: unknown;
 }
-export interface CustomMetadata extends MetadataInfo {
+export interface CustomMetadata  {
   Id?: string;
   DeveloperName?: string;
   MasterLabel?: string;
@@ -111,7 +144,7 @@ export interface ProjectJsonParsed {
   packageDirectories: PackageDirParsed[];
   [x: string | number | symbol]: unknown;
 }
-export interface PackageDirParsed extends PackageDir {
+export type PackageDirParsed = PackagePackageDir & {
   name?: string;
   fullPath?: string;
   ignoreOnStage?: string[];
@@ -202,7 +235,6 @@ export interface ApexClass {
 }
 
 export interface ApexTestQueueItem {
-  attributes: [Object];
   Id?: string;
   ApexClass?: ApexClass;
   ApexClassId?: string;
@@ -213,14 +245,12 @@ export interface ApexTestQueueItem {
 }
 
 export interface ApexCodeCoverageAggregate {
-  attributes: [Object];
   ApexClassOrTrigger?: ApexClassOrTrigger;
   NumLinesCovered?: number;
   NumLinesUncovered?: number;
 }
 
 export interface ApexTestResult {
-  attributes: [Object];
   ApexClass?: ApexClass;
   Outcome?: string;
   MethodName?: string;
@@ -235,10 +265,12 @@ export interface ApexTestQueueResult {
   OtherList: string[];
 }
 
-export interface NamedPackageDirLarge extends NamedPackageDir {
+export type NamedPackageDirLarge = PackagePackageDir & {
   ignoreOnStage?: string[];
+  fullPath?: string;
   postDeploymentScript?: string;
   preDeploymentScript?: string;
+  type?: string;
 }
 
 export interface CustomRecordResult {
@@ -363,6 +395,9 @@ export type MetadataPackageVersions = {
 }
 
 export type MetadataPackage = {
+  SObjects: {
+    [name: string]: SObjectDefinition;
+  };
   Name: string;
   MetadataPackageVersions: QueryResult<MetadataPackageVersions>;
 }
@@ -390,4 +425,41 @@ export type BranchCreateResponse = {
   commit: string;
   version: string;
 };
+
+export type Flow = {
+  Id: string
+  VersionNumber: number
+  Status: string
+  MasterLabel: string
+}
+
+export type AggregateResult = {
+  expr0: number
+  MasterLabel: string
+}
+
+export type PackageCharacter = {
+  hasManagedPckDeps: boolean
+  reason: string
+  versionNumber: string
+  type: string
+  packageDeps: PackageDirDependency[]
+  path: string
+  hasError: boolean
+  errorMessage: string
+  targetTree: NamedPackageDirLarge
+}
+
+export type Package2Version = {
+  Id: string
+  SubscriberPackageVersionId: string
+}
+
+
+
+
+
+
+
+
 

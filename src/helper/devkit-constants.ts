@@ -1,9 +1,10 @@
-import { NamedPackageDir, SfdxError } from '@salesforce/core';
+import { SfError } from '@salesforce/core';
 import fs from 'fs';
 import fspromise from 'fs/promises';
 import path from 'path';
 import YAML from 'yaml';
 import EONLogger, { COLOR_ERROR } from '../eon/EONLogger';
+import { NamedPackageDirLarge } from './types';
 
 export const SETUPFILE = 'eon-devkit.yml';
 export const DEVKITFOLDER = 'devkit';
@@ -32,11 +33,11 @@ export const EXPORTJSON: string = `{
 export const EONDEVKITYML: string = `
 # Include other devkits from other packages by adding the name of the package (e.g. core):
 include:
-    - 
-# List the permissionsets that should be assigned to current user (e.g. Service Agent): 
+    -
+# List the permissionsets that should be assigned to current user (e.g. Service Agent):
 permissionsets:
-    - 
-# add location(s) of anonymous apex scripts relative to this file (e.g. scripts/script.apex): 
+    -
+# add location(s) of anonymous apex scripts relative to this file (e.g. scripts/script.apex):
 anonymous_apex:
     - scripts/setup-script.apex
 # add location(s) of export.json files if testdata should be imported (e.g. testdata/export.json):
@@ -55,7 +56,7 @@ export interface DevKitYaml {
   test_data?: string[];
 }
 
-export const getDevKits = async (packageDirs: NamedPackageDir[], packagename: string) => {
+export const getDevKits = async (packageDirs: NamedPackageDirLarge[], packagename: string) => {
   const packagePath: string = packageDirs.find((a) => a.package === packagename).path;
 
   const filePaths: string[] = findFileInDir(packagePath, SETUPFILE);
@@ -65,7 +66,7 @@ export const getDevKits = async (packageDirs: NamedPackageDir[], packagename: st
     EONLogger.log(COLOR_ERROR('Only one ' + SETUPFILE + ' file is allowed per package'));
     return;
   } else if (filePaths.length === 0) {
-    throw new SfdxError(SETUPFILE + ' file not found in package ' + packagename);
+    throw new SfError(SETUPFILE + ' file not found in package ' + packagename);
   }
   const devKitFilePath = filePaths[0];
 

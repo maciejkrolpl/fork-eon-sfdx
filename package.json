@@ -1,7 +1,7 @@
 {
   "name": "@eon-com/eon-sfdx",
-  "description": "Salesforce DX (SFDX) commands to support salesforce developments & deployments",
-  "version": "1.13.2",
+  "description": "E.ON commands to support salesforce developments & deployments",
+  "version": "3.3.4",
   "author": {
     "email": "eon-sfdx@eon.com",
     "name": "Constantin Schlusche"
@@ -15,25 +15,29 @@
     "url": "https://github.com/eon-com/eon-sfdx/issues"
   },
   "dependencies": {
-    "@aws-sdk/client-secrets-manager": "^3.67.0",
-    "@oclif/command": "^1.8.3",
-    "@oclif/config": "^1.17.1",
-    "@oclif/errors": "^1.3.5",
-    "@salesforce/command": "^4.2.2",
-    "@salesforce/core": "^2.35.0",
-    "@salesforce/source-deploy-retrieve": "^6.3.0",
+    "@aws-sdk/client-secrets-manager": "^3.535.0",
+    "@flxbl-io/sfp": "^39.2.2",
+    "@oclif/core": "^3",
+    "@salesforce/core": "^8.6.1",
+    "@salesforce/packaging": "^4.0.4",
+    "@salesforce/schemas": "^1.9.0",
+    "@salesforce/source-deploy-retrieve": "^10.2.13",
     "axios": "^0.27.2",
+    "bottleneck": "^2.19.5",
     "chalk": "4.1.2",
     "chromium": "^3.0.3",
     "cli-progress": "^3.11.1",
     "cli-table3": "^0.6.2",
+    "dedent-js": "^1.0.1",
     "enquirer": "^2.3.6",
     "execa": "5.1.1",
     "fast-xml-parser": "^4.0.1",
-    "jsforce": "^1.11.0",
     "listr2": "^4.0.5",
     "markdown-it": "^12.3.2",
     "markdown-table": "^2.0.0",
+    "ora": "^3.4.0",
+    "p-queue": "6.6.2",
+    "rimraf": "^5.0.5",
     "semver": "^7.3.7",
     "simple-git": "^3.4.0",
     "tslib": "^2.3.1",
@@ -41,14 +45,11 @@
     "yaml": "^2.0.0"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.26.0",
     "@oclif/plugin-help": "^3.2.5",
     "@oclif/test": "^1.2.8",
-    "@salesforce/dev-config": "^3.0.1",
-    "@salesforce/dev-scripts": "^3.1.0",
-    "@salesforce/prettier-config": "^0.0.2",
-    "@salesforce/ts-sinon": "^1.3.21",
-    "@types/jsforce": "^1.9.29",
+    "@salesforce/ts-types": "^2.0.9",
+    "@types/jsforce": "^1.11.5",
+    "@types/ora": "^3.2.0",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "5.42.0",
     "eslint": "^8.27.0",
@@ -60,17 +61,17 @@
     "husky": "^7.0.4",
     "mocha": "^9.1.3",
     "nyc": "^15.1.0",
+    "oclif": "^4",
     "prettier": "^2.6.1",
-    "puppeteer": "^19.0.0",
-    "sinon": "^12.0.1",
     "standard-version": "^9.3.2",
     "ts-node": "^10.4.0",
-    "typescript": "^4.7.4"
+    "typescript": "^5.4.2"
   },
   "engines": {
     "node": ">=12.0.0"
   },
   "files": [
+    "/bin",
     "/lib",
     "/messages",
     "/npm-shrinkwrap.json",
@@ -84,9 +85,12 @@
     "packages"
   ],
   "license": "MIT",
+  "bin": {
+    "eon": "./bin/run.js"
+  },
   "oclif": {
     "commands": "./lib/commands",
-    "bin": "sfdx",
+    "bin": "eon",
     "topics": {
       "commit": {
         "description": "Interactive CLI to create semantic package versions for Unlocked Packages"
@@ -101,13 +105,15 @@
     "url": "git+https://github.com/eon-com/eon-sfdx.git"
   },
   "scripts": {
-    "build": "tsc -p .",
+    "build": "npm run clean && npm run compile",
+    "clean": "rimraf ./lib && rimraf tsconfig.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
     "lint": "eslint src/**/*.ts test/**/*.ts",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint src/**/*.ts test/**/*.ts",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "npm run clean && npm run compile",
     "test": "nyc --extension .ts --require ts-node/register mocha --forbid-only \"test/**/*.test.ts\"",
-    "version": "oclif-dev readme && git add README.md",
+    "version": "oclif readme",
     "release": "standard-version"
   }
 }
